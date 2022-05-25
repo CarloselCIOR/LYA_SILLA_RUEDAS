@@ -1,6 +1,8 @@
 #Importaciones
 from threading import local
 from tkinter.scrolledtext import ScrolledText
+from tkinter import ttk
+from tkinter import filedialog
 import lex
 import re
 import codecs
@@ -241,15 +243,80 @@ def BuscarP(event):
                                                               
         i+=1
 
+#=================Archivo=================
+def file1():    
+    if not txtBox1.edit_modified():      
+        txtBox1.delete('1.0', END)
+    else:        
+        savefileas()
+          
+        txtBox1.delete('1.0', END)  
+    
+    txtBox1.edit_modified(0)
+#=============Abrir archivo==================
+def openfile():
+    
+    if not txtBox1.edit_modified():       
+        try:            
+            path = filedialog.askopenfile(filetypes = (("All files", "*.*"), ("Text files", "*.txt"))).name          
+            
+            ventana.title('Compilador - ' + path)
+
+            with open(path, 'r') as f:             
+                content = f.read()
+                txtBox1.delete('1.0', END)
+                txtBox1.insert('1.0', content)
+                                
+                txtBox1.edit_modified(0)
+             
+        except:
+            pass   
+    
+    else:       
+        savefileas()      
+        
+        txtBox1.edit_modified(0)              
+        openfile()   
+#==========Guardar como=============
+def savefile():    
+    try:
+        
+        path = ventana.title().split('-')[1][1:]   
+    
+    except:
+        path = ''
+    
+    if path != '':
+        
+        with open(path, 'w') as f:
+            content = txtBox1.get('1.0', END)
+            f.write(content)
+      
+    else:
+        savefileas()    
+    
+    txtBox1.edit_modified(0)
+def savefileas():    
+    try:
+        path = filedialog.asksaveasfile(filetypes = (("All files", "*.*"), ("Text files", "*.txt"))).name
+        ventana.title('Compilador - ' + path)
+    
+    except:
+        return   
+    
+    with open(path, 'w') as f:
+        f.write(txtBox1.get('1.0', END))
+
 #Ventana y cosas
 ventana = Tk()
 ventana.geometry("1920x1080")
-ventana.title("Analizador Lexico - Python")
+ventana.title("Compilador")
 ventana.state('zoomed')
 
 menubar = Menu(ventana)
 ventana.config(menu = menubar)
 
+#Pantalla
 lbl1 = Label(ventana, text = "Cadena a Analizar: ")
 lbl1.grid(row = 0, column = 0)
 txtBox1 = ScrolledText()
@@ -263,12 +330,12 @@ txtBox2.grid(row = 4, column = 0)
 btn = Button(ventana, text = "Analizar", command = analizaar)
 btn.grid(column=1,row=2)
 
-
+#Menú
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="Nuevo", command = limpiar1)
-filemenu.add_command(label="Abrir")
-filemenu.add_command(label="Guardar")
-filemenu.add_command(label="Cerrar")
+filemenu.add_command(label="Nuevo", command = file1)
+filemenu.add_command(label="Abrir", command = openfile)
+filemenu.add_command(label="Guardar", command = savefile)
+filemenu.add_command(label="Guardar como...", command = savefileas)
 filemenu.add_separator()
 filemenu.add_command(label="Salir", command = ventana.quit)
 
@@ -294,5 +361,7 @@ menubar.add_cascade(label="Ayuda", menu = helpmenu)
 #Activan los eventos para colorear despues de un espacio o enter
 txtBox1.bind('<Key-space>',BuscarP)
 txtBox1.bind('<Return>',BuscarP)
+
+
 
 ventana.mainloop()
