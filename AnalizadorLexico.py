@@ -1,4 +1,5 @@
 #Importaciones
+from threading import local
 from tkinter.scrolledtext import ScrolledText
 import lex
 import re
@@ -117,7 +118,7 @@ a = []
 def analiza(cadena):
     analizador = lex.lex()
     analizador.input(cadena)
-    a.clear
+    a.clear()
     while True:
         tok = analizador.token()
         if not tok : break
@@ -144,6 +145,103 @@ def limpiar2 ():
     txtBox2.delete('1.0', END)
     txtBox2.insert(END, '')
 
+#Colorzitos
+def colorear(Palabra,color):
+    contenido = txtBox1.get(1.0,'end-1c')
+    contenido = contenido.upper()
+    palabras = contenido.split()
+    indiceInicial = "1.0"
+    #tagFeak = 'feak'
+    #CuatroFeak = 4
+  
+    i=0
+
+    while i<len(palabras):
+        
+        if palabras[i] == Palabra:
+            #Busca la palabra
+            iniFeak = txtBox1.search(Palabra,index=indiceInicial ,stopindex='end',nocase=True,count=len(Palabra))
+            inxFin = iniFeak + " + "+ str(len(Palabra)) +"c" 
+            #Crear una etiqueta para el color 
+            txtBox1.tag_add(Palabra+str(i),iniFeak,inxFin)
+            txtBox1.tag_config(Palabra+str(i),foreground=color)
+            indiceInicial=inxFin 
+
+            l = locals()
+            print(l)
+        
+        i+=1
+    
+def BuscarP(event):
+    contenido = txtBox1.get(1.0,'end-1c')
+    contenido = contenido.upper()
+    palabras = contenido.split()
+    #l = locals()
+    #print(l)
+    i=0
+    while i<len(palabras):
+        if palabras[i] == "IMPORT":
+            colorear(Palabra="IMPORT",color="blue")
+        elif palabras[i] == "DEF":
+            colorear(Palabra="DEF",color="blue")  
+        elif palabras[i] == "CLASS":
+            colorear(Palabra="CLASS",color="blue")  
+        elif palabras[i] == "IF":
+            colorear(Palabra="IF",color="indigo")  
+        elif palabras[i] == "ELSE":
+            colorear(Palabra="ELSE",color="indigo") 
+        elif palabras[i] == "FOR":
+            colorear(Palabra="FOR",color="red")
+        elif palabras[i] == "IN":
+            colorear(Palabra="IN",color="green")     
+        elif palabras[i] == "RANGE":
+            colorear(Palabra="RANGE",color="green") 
+        elif palabras[i] == "SELF":
+            colorear(Palabra="SELF",color="blue") 
+        elif palabras[i] == "WHILE":
+            colorear(Palabra="WHILE",color="red") 
+        elif palabras[i] == "TRY":
+            colorear(Palabra="TRY",color="green") 
+        elif palabras[i] == "EXCEPT":
+            colorear(Palabra="EXCEPT",color="green")
+        elif palabras[i] == "RETURN":
+            colorear(Palabra="RETURN",color="red") 
+        elif palabras[i] == "BREAK":
+            colorear(Palabra="BREAK",color="aqua")
+        elif palabras[i] == "NEXT":
+            colorear(Palabra="NEXT",color="green")
+
+        elif palabras[i] == "INPUT":
+            colorear(Palabra="INPUT",color="green")
+        elif palabras[i] == "PRINT":
+            colorear(Palabra="PRINT",color="green")
+        elif palabras[i] == "INT":
+            colorear(Palabra="INT",color="midnightblue")
+        elif palabras[i] == "FLOAT":
+            colorear(Palabra="FLOAT",color="midnightblue")
+        elif palabras[i] == "BOOLEAN":
+            colorear(Palabra="BOOLEAN",color="midnightblue")
+        elif palabras[i] == "STRING":
+            colorear(Palabra="STRING",color="midnightblue")
+        
+        elif palabras[i] == "POWER":
+            colorear(Palabra="POWER",color="gold")
+        elif palabras[i] == "SQRT":
+            colorear(Palabra="SQRT",color="gold")
+        elif palabras[i] == "AND":
+            colorear(Palabra="AND",color="magenta")
+        elif palabras[i] == "OR":
+            colorear(Palabra="OR",color="magenta")
+        elif palabras[i] == "NOT":
+            colorear(Palabra="NOT",color="magenta")
+        elif palabras[i] == "BEGIN":
+            colorear(Palabra="BEGIN",color="red")
+        elif palabras[i] == "END":
+            colorear(Palabra="END",color="red")
+                                                              
+        i+=1
+
+#Ventana y cosas
 ventana = Tk()
 ventana.geometry("1920x1080")
 ventana.title("Analizador Lexico - Python")
@@ -192,5 +290,9 @@ menubar.add_cascade(label="Archivo", menu = filemenu)
 menubar.add_cascade(label="Editar", menu = editmenu)
 menubar.add_cascade(label="Voz", menu = voicemenu)
 menubar.add_cascade(label="Ayuda", menu = helpmenu)
+
+#Activan los eventos para colorear despues de un espacio o enter
+txtBox1.bind('<Key-space>',BuscarP)
+txtBox1.bind('<Return>',BuscarP)
 
 ventana.mainloop()
