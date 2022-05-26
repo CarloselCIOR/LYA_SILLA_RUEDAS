@@ -379,7 +379,7 @@ class Lexer:
                     tok = LexToken()
                     tok.value = self.lexdata[lexpos:]
                     tok.lineno = self.lineno
-                    tok.type = 'error'
+                    tok.type = 'ERROR'
                     tok.lexer = self
                     tok.lexpos = lexpos
                     self.lexpos = lexpos

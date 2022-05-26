@@ -92,7 +92,7 @@ t_INCREMENTO = r'\+\+'
 t_DECREMENTO = r'\-\-'
 
 def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    r'@[a-zA-Z_][a-zA-Z0-9_]*'
     if t.value.upper() in reservadas:
         t.value = t.value.upper()
         t.type = t.value
@@ -112,8 +112,9 @@ def t_COMENTARIO(t):
     pass
 
 def t_error(t):
+    t.value = t.value[0]
     t.lexer.skip(1)
-    return "Caracter ilegal"
+    return t
 
 a = []
 
