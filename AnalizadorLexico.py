@@ -93,7 +93,7 @@ t_INCREMENTO = r'\+\+'
 t_DECREMENTO = r'\-\-'
 
 def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    r'@[a-zA-Z_][a-zA-Z0-9_]*'
     if t.value.upper() in reservadas:
         t.value = t.value.upper()
         t.type = t.value
@@ -113,8 +113,9 @@ def t_COMENTARIO(t):
     pass
 
 def t_error(t):
+    t.value = t.value[0]
     t.lexer.skip(1)
-    return "Caracter ilegal"
+    return t
 
 a = []
 
@@ -330,12 +331,13 @@ def Voz():
 #Ventana y cosas
 ventana = Tk()
 ventana.geometry("1920x1080")
-ventana.title("Analizador Lexico - Python")
+ventana.title("Compilador")
 ventana.state('zoomed')
 
 menubar = Menu(ventana)
 ventana.config(menu = menubar)
 
+#Pantalla
 lbl1 = Label(ventana, text = "Cadena a Analizar: ")
 lbl1.grid(row = 0, column = 0)
 txtBox1 = ScrolledText()
@@ -349,7 +351,7 @@ txtBox2.grid(row = 4, column = 0)
 btn = Button(ventana, text = "Analizar", command = analizaar)
 btn.grid(column=1,row=2)
 
-
+#Menú
 filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="Nuevo", command = file1)
 filemenu.add_command(label="Abrir", command = openfile)
@@ -379,5 +381,7 @@ menubar.add_cascade(label="Ayuda", menu = helpmenu)
 #Activan los eventos para colorear despues de un espacio o enter
 txtBox1.bind('<Key-space>',BuscarP)
 txtBox1.bind('<Return>',BuscarP)
+
+
 
 ventana.mainloop()
