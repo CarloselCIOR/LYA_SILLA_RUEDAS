@@ -1,12 +1,15 @@
 #Importaciones
 from threading import local
 from tkinter.scrolledtext import ScrolledText
+from tkinter import ttk
+from tkinter import filedialog
 import lex
 import re
 import codecs
 import os
 import sys
 from tkinter import *
+import speech_recognition as sr
 
 #Diccionario de palabras reservadas
 reservadas =  [
@@ -241,6 +244,89 @@ def BuscarP(event):
                                                               
         i+=1
 
+#=================Archivo=================
+def file1():    
+    if not txtBox1.edit_modified():      
+        txtBox1.delete('1.0', END)
+    else:        
+        savefileas()
+          
+        txtBox1.delete('1.0', END)  
+    
+    txtBox1.edit_modified(0)
+#=============Abrir archivo==================
+def openfile():
+    
+    if not txtBox1.edit_modified():       
+        try:            
+            path = filedialog.askopenfile(filetypes = (("All files", "*.*"), ("Text files", "*.txt"))).name          
+            
+            ventana.title('Compilador - ' + path)
+
+            with open(path, 'r') as f:             
+                content = f.read()
+                txtBox1.delete('1.0', END)
+                txtBox1.insert('1.0', content)
+                                
+                txtBox1.edit_modified(0)
+             
+        except:
+            pass   
+    
+    else:       
+        savefileas()      
+        
+        txtBox1.edit_modified(0)              
+        openfile()   
+#==========Guardar como=============
+def savefile():    
+    try:
+        
+        path = ventana.title().split('-')[1][1:]   
+    
+    except:
+        path = ''
+    
+    if path != '':
+        
+        with open(path, 'w') as f:
+            content = txtBox1.get('1.0', END)
+            f.write(content)
+      
+    else:
+        savefileas()    
+    
+    txtBox1.edit_modified(0)
+def savefileas():    
+    try:
+        path = filedialog.asksaveasfile(filetypes = (("All files", "*.*"), ("Text files", "*.txt"))).name
+        ventana.title('Compilador - ' + path)
+    
+    except:
+        return   
+    
+    with open(path, 'w') as f:
+        f.write(txtBox1.get('1.0', END))
+
+#Voz
+def Voz():
+    r = sr.Recognizer() 
+
+    with sr.Microphone() as source:
+        print('Speak Anything : ')
+        audio = r.listen(source)
+ 
+    try:
+        text = r.recognize_google(audio)
+        print('You said: {}'.format(text))
+        txtBox1.insert('1.0',text)
+        
+    except:
+        print('Sorry could not hear')
+    BuscarP(event=None)    
+
+    
+
 #Ventana y cosas
 ventana = Tk()
 ventana.geometry("1920x1080")
@@ -265,10 +351,10 @@ btn.grid(column=1,row=2)
 
 
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="Nuevo", command = limpiar1)
-filemenu.add_command(label="Abrir")
-filemenu.add_command(label="Guardar")
-filemenu.add_command(label="Cerrar")
+filemenu.add_command(label="Nuevo", command = file1)
+filemenu.add_command(label="Abrir", command = openfile)
+filemenu.add_command(label="Guardar", command = savefile)
+filemenu.add_command(label="Guardar como...", command = savefileas)
 filemenu.add_separator()
 filemenu.add_command(label="Salir", command = ventana.quit)
 
@@ -278,8 +364,7 @@ editmenu.add_command(label="Copiar")
 editmenu.add_command(label="Pegar")
 
 voicemenu = Menu(menubar, tearoff=0)
-editmenu.add_command(label="Archivo .WAV")
-editmenu.add_command(label="Grabacion")
+voicemenu.add_command(label="Grabacion",command= Voz)
 
 helpmenu = Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Ayuda")
